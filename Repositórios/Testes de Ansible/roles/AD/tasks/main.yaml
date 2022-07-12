@@ -1,0 +1,41 @@
+---
+
+- name: CRIANDO USUARIO NO AD
+  win_domain_user:
+    sam: testezinho1
+    name: TESTEZINHO
+    firstname: TESTE
+    surname: ZINHO
+    displayname: TESTE ZINHO
+    company: X3120901
+    state: present
+    
+    state_province: RJ
+    street: Fazenda Saco Dantas s/n
+    city: Sao Joao da Barra
+    country: BR
+    description: 1234567
+    email: testezinho@ferroport.com.br
+    office: PORTO DO ACU
+    groups:
+      - Domain Admins
+      - VPN
+      - FERROPORT_SJB
+    
+    postal_code: 28200-000
+    upn: testezinho1@ferroport.com.br
+    attributes:
+      displayName: TESTEZINHO BONITO
+      physicalDeliveryOfficeName: PORTO DO ACU
+      postOfficeBox: 080.080.080-36
+      scriptPath: user.bat
+      pager: 01/01/1994
+      facsimileTelephoneNumber: 20/04/2022
+      info: office365
+      title: TESTACO
+      department: boneco
+      
+
+...
+
+

@@ -1,0 +1,14 @@
+---
+
+- name: Instalacao do Red Hat Insights
+  yum: name=insights-client.noarch state=latest
+  become: yes
+
+- name: Copiando arquivo de configuracao
+  template: src=insights-client.conf dest=/etc/insights-client/insights-client.conf force=yes owner=root group=root
+  become: yes
+
+- name: Executando comando de registry
+  ansible.builtin.command: insights-client --register
+  become: yes
+...

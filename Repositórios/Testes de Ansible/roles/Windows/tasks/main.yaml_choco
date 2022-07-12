@@ -1,0 +1,21 @@
+---
+
+- name: CHOCOLATEY | Instalando Chocolatey
+  win_shell: Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+- name: CHOCOLATEY | Desabilitando enhanced exit codes
+  win_chocolatey_feature:
+    name: useEnhancedExitCodes
+    state: disabled
+
+- name: CHOCOLATEY | Instalando Softwares
+  win_chocolatey:
+    name: '{{ item }}'
+    state: latest
+  with_items:
+    - git
+    - firefox
+    - putty
+
+...
+

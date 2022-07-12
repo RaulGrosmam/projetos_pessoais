@@ -1,0 +1,28 @@
+---
+
+- name: CRIANDO PASTA C:\TEMP
+  win_file:
+    path: C:\TEMP\
+    state: directory
+
+- name: COPIANDO EXE DO SCCM
+  win_copy:
+    src: ccmsetup.exe
+    dest: C:\TEMP\ccmsetup.exe
+
+- name: EXECUCAO DO COMANDO DE DESINSTALACAO DO SCCM
+  win_package: 
+    path: C:\TEMP\ccmsetup.exe
+    #product_id: '{92F4C088-B002-4B3C-A503-D934EB0C35CC}'
+    product_id: '{5A5E6F34-D869-466C-B4EC-F0EAB66DBF59}'
+    arguments: /uninstall
+    become: yes
+    become_method: runas
+
+- name: REMOVENDO EXE DO SCCM
+  win_file:
+    path: C:\TEMP\ccmsetup.exe
+    state: absent
+
+...
+

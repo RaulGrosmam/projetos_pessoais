@@ -1,0 +1,5 @@
+- name: Default Playbook - Starting Deploy
+  hosts:
+    - 
+  roles:
+    - AttRHEL

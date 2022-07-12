@@ -1,0 +1,27 @@
+---
+
+- name: CRIANDO PASTA C:\TEMP
+  win_file:
+    path: C:\TEMP\
+    state: directory
+
+- name: COPIANDO XML DO FORTINET
+  win_copy:
+    src: configuracao_fortinet_frp.xml
+    dest: C:\TEMP\configuracao_fortinet_frp.xml
+
+- name: EXECUCAO DO COMANDO DE CONFIGURACAO DO FORTINET
+  #win_command: C:\Program Files\Fortinet\FortiClient\FCConfig.exe -m all -f C:\TEMP\configuracao_fortinet_frp.xml -o import -i 2 -p Fortinet
+  win_command: .\FCConfig.exe -m all -f C:\TEMP\configuracao_fortinet_frp.xml -o import -i 2 -p Fortinet
+  args:   
+    chdir: C:\Program Files\Fortinet\FortiClient
+#    become: yes
+#    become_method: runas
+
+- name: REMOVENDO XML do FORTINET 
+  win_file:
+    path: C:\TEMP\configuracao_fortinet_frp.xml
+    state: absent
+
+...
+

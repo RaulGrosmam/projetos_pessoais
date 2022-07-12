@@ -1,0 +1,9 @@
+---
+
+- name: Executando ipconfig
+  win_shell: 'netsh interface ipv4 set subinterface "Wi-Fi" mtu=1400 store=persistent'
+  args:
+    executable: cmd
+
+...
+

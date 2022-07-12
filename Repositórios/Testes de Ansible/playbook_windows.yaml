@@ -1,0 +1,6 @@
+- name: Default Playbook - Starting Deploy
+  hosts: 
+    -
+    -
+  roles:
+    - Windows
