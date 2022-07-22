@@ -33,3 +33,15 @@ No final de tudo, é gerado um Log de tudo que foi alterado.
 Teste de Ansible
 
 Ambiente Ansible criado como testes em ambiente de produção.
+
+##################################################################################
+
+Editor de LVM
+
+Um automatizador para criação e edição de PVs, VGs e LVs em ambiente Linux (Quaisquer distribuições)
+
+##################################################################################
+
+Jogo da Velha
+
+Apenas um jogo da velha criada em Script Shell, na época em que estava aprendendo o mesmo
