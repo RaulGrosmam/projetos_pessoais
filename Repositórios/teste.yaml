@@ -1,0 +1,107 @@
+- hosts: all
+  gather_facts: yes
+  become: true
+
+  vars:
+    GLPI_URL: 'https://itsm-teste.indrabrasil.com.br'
+    GLPI_USER_TOKEN: 'o4beb5vRZ3jvO9FhF5OZc6QRWtuiJxMVsZ6mPrwX'
+    GLPI_APP_TOKEN: '2pYayCtRrszHjzg9UWhi9tVeSWyVqqde63SMjpyS'
+
+    # vars para survey e mapeamento
+    GRUPO_TECH: "{{ grupo_tech }}"
+    LOCATION: "{{ location }}"
+    TIPO: "{{ tipo }}"
+    GRUPO: "{{ grupo }}"
+    OS: "{{ os }}"
+    OS_VERSION: "{{ os_version }}"
+
+    # mapeamento para transformacao dos dados
+    map_grupo_tech:
+      "N3-INFRA-SO": 17
+      "N3-INFRA-MONITORAÇÃO": 12
+      "N3-INFRA-DEVOPS": 1
+
+    map_location:      
+      "SAO PAULO-PANAMERICA": 1
+      "AEGEA": 30
+      "JOAO PESSOA-ANTONIO RABELO": 9
+
+    map_tipo:
+      "AEGEA": 5
+      "DEV": 2
+      "HOMOLOG": 4
+      "PRD": 1 	
+      "QA": 3
+    
+    map_grupo:
+      "N3-INFRA-SO": 17
+      "N3-INFRA-MONITORAÇÃO": 12
+      "N3-INFRA-DEVOPS": 1
+
+    map_os:
+      "Linux": 1
+      "Windows": 2
+
+    map_os_version:
+      "CentOS 7": 75
+      "Ubuntu 18.04.1 LTS": 54
+
+  tasks: 
+    - name: Gerando Token de acesso
+      command: >
+        curl --silent \
+             --request GET \
+             --url {{ GLPI_URL }}/apirest.php/initSession/ \
+             --header "App-Token: {{ GLPI_APP_TOKEN }}" \
+             --header "Authorization: user_token {{ GLPI_USER_TOKEN }}" \
+             --header 'Content-Type: application/json'
+      register: session_token
+      failed_when: 'session_token.rc | default(6) != 6 and session_token.stderr | default("") != ""'
+
+    - name: Transformando o token de acesso em uma variavel
+      set_fact:
+        TOKEN_SESSION: "{{ session_token.stdout | regex_replace('\\{\"session_token\":\"(.+)\"', '\\1') | regex_replace('}', '') }}"
+
+    - name: Realizando POST no GLPI
+      command: >
+        curl -X POST \
+             -H 'Content-Type: application/json' \
+             -H "Session-Token: {{ TOKEN_SESSION }}" \
+             -H "App-Token: {{ GLPI_APP_TOKEN }}" \
+             -d '{
+                   "input": {
+                     "name": "{{ ansible_hostname }}",
+                     "serial": "{{ ansible_product_serial }}",
+                     "groups_id_tech": "{{ map_grupo_tech[grupo_tech] }}",
+                     "comment": "Gerado por Ansible Playbook",
+                     "locations_id": "{{ map_location[location] }}",
+                     "computertypes_id": "{{ map_tipo[tipo] }}",
+                     "groups_id": "{{ map_grupo[grupo] }}",
+                     "states_id": "1"
+                            }
+                  }' \
+                 'https://itsm-teste.indrabrasil.com.br/apirest.php/Computer/'
+      register: computer
+
+    - name: Retorno da API
+      debug:
+        var: computer.stdout   
+
+    - name: Capturando ID do computador inserido no inventario
+      set_fact:
+        id_computer: "{{ computer.stdout | from_json | selectattr('id') | first }}"
+
+    - name: Retorno do valor ID Computer
+      debug:
+        var: id_computer     
+
+    - name: Finalizando sessao
+      command: >
+        curl --silent \
+             --request GET \
+             --header 'Content-Type: application/json' \
+             -H "Session-Token: {{ TOKEN_SESSION }}" \
+             -H "App-Token: {{ GLPI_APP_TOKEN }}" \
+              'https://itsm-teste.indrabrasil.com.br/apirest.php/Computer/'
+      register: end_session_token
+      failed_when: 'end_session_token.rc | default(6) != 6 and end_session_token.stderr | default("") != ""'
